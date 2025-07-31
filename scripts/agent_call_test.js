@@ -17,6 +17,9 @@ async function main() {
   const allowance = await aleToken.allowance(user3.address, agentApiAddress);
   console.log("Current approved token amount:", allowance.toString());
 
+  const balance = await aleToken.balanceOf(user3.address);
+  console.log("User3 token balance:", balance.toString());
+
   if (Number(allowance.toString()) < 44) {
     console.log("Insufficient token approval. Re-approving...");
     const approveTx = await aleToken.connect(user3).approve(agentApiAddress, 987654321);

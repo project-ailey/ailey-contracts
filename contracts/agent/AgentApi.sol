@@ -22,7 +22,48 @@ contract AgentApi is Initializable {
 	}
 
 	function callTest() external {
-//		IERC20(aleToken).approve(address(aileyApiContract), 44);
 		aileyApiContract.test(msg.sender);
+	}
+
+	function callAddLiquidity(
+		address tokenA,
+		address tokenB,
+		uint24 fee,
+		int24 tickLower,
+		int24 tickUpper,
+		uint256 amountADesired,
+		uint256 amountBDesired,
+		uint256 amountAMin,
+		uint256 amountBMin,
+		address to,
+		uint256 deadline
+	) external {
+		IERC20(tokenA).transferFrom(msg.sender, address(aileyApiContract), amountADesired);
+		IERC20(tokenB).transferFrom(msg.sender, address(aileyApiContract), amountBDesired);
+
+		(uint256 tokenId, uint128 liquidity, uint256 amountAUsed, uint256 amountBUsed) =
+							aileyApiContract.addLiquidity(
+				tokenA,
+				tokenB,
+				fee,
+				tickLower,
+				tickUpper,
+				amountADesired,
+				amountBDesired,
+				amountAMin,
+				amountBMin,
+				to,
+				deadline
+			);
+
+		uint256 remainingTokenA = IERC20(tokenA).balanceOf(address(this));
+		uint256 remainingTokenB = IERC20(tokenB).balanceOf(address(this));
+
+		if (remainingTokenA > 0) {
+			IERC20(tokenA).transfer(msg.sender, remainingTokenA);
+		}
+		if (remainingTokenB > 0) {
+			IERC20(tokenB).transfer(msg.sender, remainingTokenB);
+		}
 	}
 }
